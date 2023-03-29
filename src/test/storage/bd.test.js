@@ -1,13 +1,12 @@
 const { Client } = require('pg')
-
+require("dotenv").config();
 describe('Database connection', () => {
   test('should connect to database', (done) => {
     const client = new Client({
-      user: 'mspr',
-      host: 'localhost',
-      database: 'mspr',
-      password: 'mspr',
-      port: 5432,
+      user:process.env.pg_user,
+      host:process.env.pg_host,
+      database:process.env.pg_database,
+      password:process.env.pg_password
     }, 10000)
 
     client.connect((err) => {

@@ -16,7 +16,7 @@ exports.getCustomers = (req, res) => {
 
 // controller to get all products
 exports.getCustomersById = (req, res) => {
-  id=req.body.id;
+  id=req.params.id;
   console.log(id)
   bd.query('SELECT * FROM public."Commande" WHERE "id_client"='+id+'ORDER BY id_client ASC ', (err, rows) => {
     if (err) {
@@ -31,7 +31,7 @@ exports.getCustomersById = (req, res) => {
 
 // controller to get all products
 exports.getProduitsByCustomerId = (req, res) => {
-  id=req.body.id;
+  id=req.params.id;
   bd.query('SELECT p.id_produit, p.nom,p.description,p.couleur,p.prix,p.stock FROM public."Commande" c JOIN public."Produit" p ON p.id_produit = ANY(c.id_produits) WHERE c.id_commande ='+id+'ORDER BY id_client ASC ', (err, rows) => {
     if (err) {
       console.error('Erreur lors de la récupération de la liste des customers : ', err);

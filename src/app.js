@@ -1,46 +1,38 @@
-const express = require('express');
+const express = require("express");
+require("dotenv").config();
 const app = express();
 const { auth } = require('express-oauth2-jwt-bearer');
-const { requiredScopes } = require('express-oauth2-jwt-bearer');
-const checkScopes = requiredScopes('read:messages');
-const port = process.env.PORT || 3030;
 
 const jwtCheck = auth({
-  audience: 'https://web-shop-api/',
-  issuerBaseURL: 'https://dev-cjxhb-x9.eu.auth0.com/',
-  tokenSigningAlg: 'RS256'
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: process.env.AUTH0_ISSUER,
+  tokenSigningAlg: process.env.JWT
 });
 
 // enforce on all endpoints
 app.use(jwtCheck);
 
+
+// Configurations
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+
+
 app.get('/authorized', function (req, res) {
     res.send('Secured Resource');
 });
 
-// server.js
+// Routes
+const {
+	getCustomers,getCustomersById,getProduitsByCustomerId
+} = require("./main/controllers/customer");
 
-// This route doesn't need authentication
-app.get('/api/public', function(req, res) {
-    res.json({
-      message: 'Hello from a public endpoint! You don\'t need to be authenticated to see this.'
-    });
-  });
-  
-  // This route needs authentication
-app.get('/api/private', jwtCheck, function(req, res) {
-    res.json({
-      message: 'Hello from a private endpoint! You need to be authenticated to see this.'
-    });
-});
+app.get("/api/v1/customer/orders/products",getProduitsByCustomerId);
+app.get("/api/v1/customer/orders",getCustomersById);
+app.get("/api/v1/customer/",getCustomers);
 
-  
-app.get('/api/private-scoped', jwtCheck, checkScopes, function(req, res) {
-    res.json({
-      message: 'Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.'
-    });
-});
 
-app.listen(port);
+app.listen(process.env.port);
 
-console.log('Running on port ', port);
+console.log('Running on port '+ process.env.port);
